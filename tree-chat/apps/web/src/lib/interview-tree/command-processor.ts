@@ -12,6 +12,7 @@ import {
   InterviewQuestion
 } from './types';
 import { TreeUtils } from './tree-utils';
+import { generateUUID } from '../utils/uuid';
 
 export class TreeCommandProcessor {
   static applyCommand(
@@ -326,7 +327,7 @@ export class TreeCommandProcessor {
 
     for (const commandData of payload.commands) {
       const command: TreeCommand = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         timestamp: new Date(),
         source: 'frontend',
         ...commandData
@@ -460,7 +461,7 @@ export class TreeCommandProcessor {
     source: 'frontend' | 'langgraph' | 'user' = 'frontend'
   ): TreeCommand {
     return {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       type,
       payload,
       timestamp: new Date(),

@@ -10,6 +10,7 @@ import {
 } from './types';
 import { TreeCommandProcessor } from './command-processor';
 import { TreeUtils } from './tree-utils';
+import { generateUUID } from '../utils/uuid';
 
 interface HistoryEntry {
   state: InterviewTreeState;
@@ -88,7 +89,7 @@ export function useInterviewTree(
   ): CommandResult => {
     // Create complete command
     const fullCommand: TreeCommand = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       timestamp: new Date(),
       source: 'frontend',
       ...command
@@ -193,7 +194,7 @@ export function useInterviewTree(
     question: Partial<InterviewQuestion>
   ): CommandResult => {
     const completeQuestion: InterviewQuestion = {
-      id: question.id || crypto.randomUUID(),
+      id: question.id || generateUUID(),
       question: question.question || '',
       type: question.type || 'text',
       choices: question.choices,
