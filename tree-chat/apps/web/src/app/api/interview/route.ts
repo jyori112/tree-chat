@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Get LangGraph API URL from environment variable
-const LANGGRAPH_API_URL = process.env.LANGGRAPH_API_URL || 'http://127.0.0.1:2024';
+// Temporary workaround: hardcode for EC2 deployment
+const LANGGRAPH_API_URL = process.env.LANGGRAPH_API_URL || (
+  process.env.NODE_ENV === 'production' ? 'http://127.0.0.1:2024' : 'http://localhost:2024'
+);
 
 interface LangGraphRequest {
   command: {
