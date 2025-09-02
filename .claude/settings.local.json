@@ -38,7 +38,18 @@
       "Bash(terraform:*)",
       "Bash(grep:*)",
       "Bash(aws configure:*)",
-      "Bash(pnpm start:*)"
+      "Bash(pnpm start:*)",
+      "Bash(aws ssm start-session:*)",
+      "Bash(ssh:*)",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_network_requests",
+      "Bash(git push:*)",
+      "Bash(ngrok:*)",
+      "Read(/Users/jsakuma/**)",
+      "Bash(claude --version)",
+      "Bash(npx @playwright/mcp:*)",
+      "Bash(env)"
     ],
     "deny": [],
     "ask": []

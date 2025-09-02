@@ -149,72 +149,18 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 }) => {
   const isCollapsed = collapsedNodes.has(question.id);
   const hasChildren = question.children && question.children.length > 0;
-  const parentRef = useRef<HTMLDivElement>(null);
-  const childrenRef = useRef<HTMLDivElement>(null);
-  const [connections, setConnections] = useState<Array<{
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
-    childId: string;
-  }>>([]);
 
   const handleToggleCollapse = () => {
     if (hasChildren) {
       onToggleCollapse(question.id);
     }
   };
-
-  // Update connection positions when layout changes
-  useEffect(() => {
-    if (!isCollapsed && question.isAnswered && hasChildren && parentRef.current && childrenRef.current) {
-      const updateConnections = () => {
-        const parentCard = parentRef.current?.querySelector('.interview-card');
-        const childCards = childrenRef.current?.querySelectorAll('.interview-card');
-        
-        if (parentCard && childCards) {
-          const parentRect = parentCard.getBoundingClientRect();
-          const childrenContainerRect = childrenRef.current!.getBoundingClientRect();
-          
-          const newConnections = Array.from(childCards).map((childCard, index) => {
-            const childRect = childCard.getBoundingClientRect();
-            const child = question.children?.[index];
-            const childId = child?.id || `unknown-${index}`;
-            
-            return {
-              startX: parentRect.right - childrenContainerRect.left,
-              startY: parentRect.top + parentRect.height / 2 - childrenContainerRect.top,
-              endX: childRect.left - childrenContainerRect.left,
-              endY: childRect.top + childRect.height / 2 - childrenContainerRect.top,
-              childId
-            };
-          }).filter(conn => !conn.childId.startsWith('unknown-'));
-          
-          setConnections(newConnections);
-        }
-      };
-
-      // Update immediately and on resize
-      updateConnections();
-      window.addEventListener('resize', updateConnections);
-      
-      // Use ResizeObserver for better layout detection
-      const resizeObserver = new ResizeObserver(updateConnections);
-      if (parentRef.current) resizeObserver.observe(parentRef.current);
-      if (childrenRef.current) resizeObserver.observe(childrenRef.current);
-
-      return () => {
-        window.removeEventListener('resize', updateConnections);
-        resizeObserver.disconnect();
-      };
-    }
-  }, [isCollapsed, question.isAnswered, hasChildren, question.children]);
   
   return (
     <div className="relative">
       <div className="flex items-start gap-6">
         {/* Left side: Current question with toggle button */}
-        <div ref={parentRef} className="flex flex-col items-start gap-2 relative">
+        <div className="flex flex-col items-start gap-2 relative">
           <div className="flex items-center gap-2">
             <InterviewCard
               question={question}
@@ -242,72 +188,43 @@ const TreeNode: React.FC<TreeNodeProps> = ({
 
         {/* Right side: Children container - only show if not collapsed and question is answered */}
         {!isCollapsed && question.isAnswered && hasChildren && (
-          <div ref={childrenRef} className="relative flex flex-col gap-4">
-            {/* Connecting lines SVG */}
-            <svg 
-              className="absolute pointer-events-none"
-              style={{
-                top: 0,
-                left: -24,
-                width: 'calc(100% + 48px)',
-                height: '100%',
-                zIndex: 1
-              }}
-            >
-              <defs>
-                <marker
-                  id={`arrowhead-${question.id}`}
-                  markerWidth="12"
-                  markerHeight="8"
-                  refX="11"
-                  refY="4"
-                  orient="auto"
-                >
-                  <polygon
-                    points="0 0, 12 4, 0 8"
-                    fill="#374151"
-                  />
-                </marker>
-              </defs>
-              {connections.map((conn) => {
-                const horizontalDistance = conn.endX - conn.startX;
-                const verticalDistance = conn.endY - conn.startY;
-                const midX = conn.startX + horizontalDistance * 0.5;
-                
-                // Create a smooth rounded path with proper positioning
-                const pathData = `
-                  M ${conn.startX} ${conn.startY}
-                  L ${midX - 16} ${conn.startY}
-                  Q ${midX} ${conn.startY} ${midX} ${conn.startY + (verticalDistance > 0 ? 16 : -16)}
-                  L ${midX} ${conn.endY - (verticalDistance > 0 ? 16 : -16)}
-                  Q ${midX} ${conn.endY} ${midX + 16} ${conn.endY}
-                  L ${conn.endX} ${conn.endY}
-                `;
-                
-                return (
-                  <path
-                    key={conn.childId}
-                    d={pathData}
-                    fill="none"
-                    stroke="#374151"
-                    strokeWidth="2"
-                    markerEnd={`url(#arrowhead-${question.id})`}
-                    opacity="0.8"
-                  />
-                );
-              })}
-            </svg>
+          <div className="relative pl-8">
+            {/* Connection lines using borders and pseudo-elements */}
+            <div className="relative">
+              {/* Parent to first child connection */}
+              <div className="absolute left-0 top-6 w-6 border-t-2 border-gray-400"></div>
+              
+              {/* Tree structure for multiple children */}
+              {question.children!.length > 1 && (
+                <div 
+                  className="absolute left-6 border-l-2 border-gray-400"
+                  style={{ 
+                    top: '24px',
+                    height: `${question.children!.length * 64}px`
+                  }}
+                ></div>
+              )}
+            </div>
             
-            {question.children!.map((child) => (
-              <TreeNode
-                key={child.id}
-                question={child}
-                onAnswer={onAnswer}
-                level={level + 1}
-                collapsedNodes={collapsedNodes}
-                onToggleCollapse={onToggleCollapse}
-              />
-            ))}
+            {/* Children with individual connection lines */}
+            <div className="space-y-4">
+              {question.children!.map((child, index) => (
+                <div key={child.id} className="relative">
+                  {/* Individual branch line for each child */}
+                  {question.children!.length > 1 && (
+                    <div className="absolute -left-2 top-6 w-2 border-t-2 border-gray-400"></div>
+                  )}
+                  
+                  <TreeNode
+                    question={child}
+                    onAnswer={onAnswer}
+                    level={level + 1}
+                    collapsedNodes={collapsedNodes}
+                    onToggleCollapse={onToggleCollapse}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -454,92 +371,12 @@ export const InterviewTree: React.FC = () => {
       const deltaX = e.clientX - dragStart.x;
       const deltaY = e.clientY - dragStart.y;
       
-      const container = containerRef.current;
-      const content = contentRef.current;
-      
-      if (container && content) {
-        // Get the actual content dimensions
-        const allCards = content.querySelectorAll('.interview-card');
-        if (allCards.length > 0) {
-          let minX = Infinity, minY = Infinity;
-          let maxX = -Infinity, maxY = -Infinity;
-          
-          // Find the bounding box of all cards
-          allCards.forEach((card) => {
-            const rect = card.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            
-            // Convert to content coordinates
-            const cardX = (rect.left - containerRect.left - pan.x) / scale;
-            const cardY = (rect.top - containerRect.top - pan.y) / scale;
-            const cardRight = cardX + rect.width / scale;
-            const cardBottom = cardY + rect.height / scale;
-            
-            minX = Math.min(minX, cardX);
-            minY = Math.min(minY, cardY);
-            maxX = Math.max(maxX, cardRight);
-            maxY = Math.max(maxY, cardBottom);
-          });
-          
-          // Add some padding
-          const padding = 50;
-          minX -= padding;
-          minY -= padding;
-          maxX += padding;
-          maxY += padding;
-          
-          const containerRect = container.getBoundingClientRect();
-          
-          // Calculate pan limits
-          // The content's left edge should not go beyond the container's left edge
-          const maxPanX = -minX * scale;
-          // The content's right edge should not go beyond the container's right edge
-          const minPanX = containerRect.width - maxX * scale;
-          
-          // The content's top edge should not go beyond the container's top edge
-          const maxPanY = -minY * scale;
-          // The content's bottom edge should not go beyond the container's bottom edge
-          const minPanY = containerRect.height - maxY * scale;
-          
-          // Calculate new pan position with limits
-          let newPanX = dragStartPan.x + deltaX;
-          let newPanY = dragStartPan.y + deltaY;
-          
-          // Apply limits only if they make sense (content is larger than viewport)
-          if (maxX * scale - minX * scale > containerRect.width) {
-            newPanX = Math.min(maxPanX, Math.max(minPanX, newPanX));
-          } else {
-            // If content fits in viewport width, center or limit to reasonable bounds
-            newPanX = Math.min(maxPanX, newPanX);
-          }
-          
-          if (maxY * scale - minY * scale > containerRect.height) {
-            newPanY = Math.min(maxPanY, Math.max(minPanY, newPanY));
-          } else {
-            // If content fits in viewport height, limit to top bound
-            newPanY = Math.min(maxPanY, newPanY);
-          }
-          
-          setPan({
-            x: newPanX,
-            y: newPanY,
-          });
-        } else {
-          // No cards found, allow normal panning
-          setPan({
-            x: dragStartPan.x + deltaX,
-            y: dragStartPan.y + deltaY,
-          });
-        }
-      } else {
-        // Fallback to normal panning if refs not available
-        setPan({
-          x: dragStartPan.x + deltaX,
-          y: dragStartPan.y + deltaY,
-        });
-      }
+      setPan({
+        x: dragStartPan.x + deltaX,
+        y: dragStartPan.y + deltaY,
+      });
     }
-  }, [isDragging, dragStart, dragStartPan, pan, scale]);
+  }, [isDragging, dragStart, dragStartPan]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
