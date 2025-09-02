@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "concurrently \"turbo dev --filter=web\" \"turbo dev --filter=agents\"",
     "build": "turbo build",
+    "start": "concurrently \"cd apps/web && pnpm start\" \"cd apps/agents && npx @langchain/langgraph-cli dev --port 2024 --host 0.0.0.0 --config ../../langgraph.json\"",
     "turbo:command": "turbo",
     "format": "turbo format",
     "lint": "turbo lint",

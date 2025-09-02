@@ -74,26 +74,31 @@ export const InterviewAgentState = Annotation.Root({
     sessionId?: string;
     timestamp?: string;
   } | null>({
+    value: (x, y) => y ?? x ?? null,
     default: () => null,
   }),
   
   // LLM reasoning and processing
   reasoning: Annotation<string>({
+    value: (x, y) => y ?? x ?? "",
     default: () => "",
   }),
   
   // Generated commands
   commands: Annotation<InterviewTreeCommand[]>({
+    value: (x, y) => y ?? x ?? [],
     default: () => [],
   }),
   
   // Final output
   output: Annotation<InterviewOutput | null>({
+    value: (x, y) => y ?? x ?? null,
     default: () => null,
   }),
   
   // Error handling
   error: Annotation<string | null>({
+    value: (x, y) => y ?? x ?? null,
     default: () => null,
   }),
 });
