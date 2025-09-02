@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm lint:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm build:*)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:langchain-ai.github.io)",
+      "Bash(langgraph:*)",
+      "Bash(npx @langchain/langgraph-cli:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(npm install:*)",
+      "Bash(pnpm add:*)",
+      "Bash(cat:*)",
+      "Read(/Users/jsakuma/**)",
+      "Read(/Users/jsakuma/.claude/**)",
+      "Read(/Users/jsakuma/.claude/**)",
+      "Read(/Users/jsakuma/.claude/plugins/**)",
+      "Bash(claude code --add-mcp '{\"\"name\"\":\"\"playwright\"\",\"\"command\"\":\"\"npx\"\",\"\"args\"\":[\"\"@playwright/mcp@latest\"\"]}')",
+      "Bash(claude code --help)",
+      "Bash(claude mcp:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_evaluate",
+      "Bash(find:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_resize",
+      "Bash(curl:*)",
+      "mcp__playwright__browser_close",
+      "mcp__playwright__browser_install",
+      "Bash(lsof:*)",
+      "mcp__playwright__browser_drag"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

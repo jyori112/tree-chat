@@ -1,0 +1,20 @@
+# AWS Configuration
+aws_region = "ap-northeast-1"  # Tokyo region
+
+# Project Configuration
+project_name  = "tree-chat"
+instance_type = "t3.small"  # 2 vCPU, 2GB RAM ($0.0272/hour)
+volume_size   = 20
+
+# SSH Configuration
+public_key_path = "~/.ssh/id_rsa.pub"
+ssh_allowed_ips = ["YOUR_IP_ADDRESS/32"]  # Replace with your IP for security
+
+# API Keys (Required)
+anthropic_api_key = "sk-ant-..."  # Your Anthropic API key
+openai_api_key    = "sk-..."      # Your OpenAI API key (optional)
+tavily_api_key    = ""             # Tavily API key for web search (optional)
+langsmith_api_key = ""             # LangSmith API key for monitoring (optional)
+
+# Domain Configuration (optional)
+domain_name = ""  # Leave empty if you don't have a domain
