@@ -49,7 +49,10 @@
       "Read(/Users/jsakuma/**)",
       "Bash(claude --version)",
       "Bash(npx @playwright/mcp:*)",
-      "Bash(env)"
+      "Bash(env)",
+      "mcp__playwright__browser_wait_for",
+      "Bash(pnpm --filter=agents dev)",
+      "Bash(pnpm --filter=web dev)"
     ],
     "deny": [],
     "ask": []
