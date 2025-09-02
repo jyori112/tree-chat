@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Get LangGraph API URL from environment variable
-const LANGGRAPH_API_URL = process.env.LANGGRAPH_API_URL || 'http://localhost:2024';
+const LANGGRAPH_API_URL = process.env.LANGGRAPH_API_URL || 'http://127.0.0.1:2024';
 
 interface LangGraphRequest {
   command: {
