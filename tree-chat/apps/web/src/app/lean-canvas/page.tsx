@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft, Download, Upload, Lightbulb, X, Check, MessageCircle } from "lucide-react";
+import { Lightbulb, X, Check, MessageCircle, Home } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
@@ -100,10 +100,36 @@ export default function LeanCanvasPage() {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [dismissedSuggestions, setDismissedSuggestions] = useState<Set<string>>(new Set());
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState<string>("");
   const [isLoadingChat, setIsLoadingChat] = useState(false);
   const [appliedSuggestions, setAppliedSuggestions] = useState<Set<string>>(new Set());
+
+  // Check if there's a brainstorm idea in sessionStorage
+  useEffect(() => {
+    const brainstormIdea = sessionStorage.getItem('brainstormIdea');
+    if (brainstormIdea) {
+      try {
+        const idea = JSON.parse(brainstormIdea);
+        setBusinessName(idea.title);
+        // Pre-fill some canvas sections based on the idea
+        setCanvasData({
+          uvp: idea.uniqueValue,
+          segments: idea.targetMarket,
+          solution: idea.description
+        });
+        // Clear the sessionStorage
+        sessionStorage.removeItem('brainstormIdea');
+        // Show a welcome message in chat
+        setChatMessages([{
+          role: 'assistant',
+          content: `素晴らしいアイデアですね！「${idea.title}」のリーンキャンバスを一緒に作成しましょう。すでにいくつかの項目を入力しておきました。他の項目も一緒に埋めていきましょう。`
+        }]);
+      } catch (error) {
+        console.error('Failed to parse brainstorm idea:', error);
+      }
+    }
+  }, []);
 
   const handleSectionChange = (sectionId: string, value: string) => {
     setCanvasData((prev) => ({
@@ -254,6 +280,15 @@ export default function LeanCanvasPage() {
 
   return (
     <div className="h-screen w-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden p-4">
+      {/* Navigation - Fixed Position */}
+      <Link 
+        href="/" 
+        className="fixed top-6 left-6 z-50 bg-gray-500 hover:bg-gray-600 text-white rounded-full p-3 shadow-lg transition-colors"
+        title="ホームに戻る"
+      >
+        <Home className="w-5 h-5" />
+      </Link>
+
       {/* Chat Icon - Fixed Position */}
       <button
         onClick={() => setIsChatOpen(!isChatOpen)}

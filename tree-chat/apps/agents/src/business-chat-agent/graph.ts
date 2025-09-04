@@ -4,11 +4,11 @@ import { BusinessChatAgentState, type BusinessChatAgentStateType } from "./state
 import { BUSINESS_CHAT_SYSTEM_PROMPT, formatCanvasData, formatChatHistory } from "./prompts.js";
 import { tools } from "./tools.js";
 
-// Initialize LLM with tools for web search
-const llmWithTools = new ChatOpenAI({
-  model: "gpt-4o",
-  temperature: 0.7,
-}).bindTools(tools);
+// Initialize LLM with tools for web search (currently unused but kept for future tool integration)
+// const llmWithTools = new ChatOpenAI({
+//   model: "gpt-4o",
+//   temperature: 0.7,
+// }).bindTools(tools);
 
 // Initialize LLM without tools for chat responses  
 const llm = new ChatOpenAI({
