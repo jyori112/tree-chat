@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 
-// 簡易的なSWOT分析API（実際のLangGraph統合なし）
+// Get LangGraph API URL from environment variable
+const LANGGRAPH_API_URL = process.env.LANGGRAPH_API_URL || (
+  process.env.NODE_ENV === 'production' ? 'http://127.0.0.1:2025' : 'http://localhost:2025'
+);
+
 interface SwotRequest {
   businessName: string;
   canvasData: Record<string, string>;
@@ -19,13 +24,146 @@ interface SwotSuggestion {
   type: 'empty' | 'insufficient' | 'improvement';
 }
 
+interface LangGraphResponse {
+  success: boolean;
+  suggestions: SwotSuggestion[];
+  crossSwot?: {
+    so: string;
+    wo: string;
+    st: string;
+    wt: string;
+  };
+  reasoning?: string;
+  error?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body: SwotRequest = await request.json();
     
     console.log('API: Received SWOT analysis request for:', body.businessName);
 
-    // 各セクションに対するサジェストを生成
+    // LangGraph Agent IDを使用（実際のIDに置き換える必要がある場合があります）
+    const assistantId = 'swot_analysis_agent';
+    
+    // LangGraph APIを呼び出し
+    try {
+      console.log('LLM: Calling SWOT analysis agent for business:', body.businessName);
+      
+      const langGraphResponse = await fetch(`${LANGGRAPH_API_URL}/threads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assistant_id: assistantId,
+          input: {
+            businessName: body.businessName,
+            strengths: body.canvasData.strengths || '',
+            weaknesses: body.canvasData.weaknesses || '',
+            opportunities: body.canvasData.opportunities || '',
+            threats: body.canvasData.threats || '',
+            analysisType: body.context?.requestType === 'improvement' ? 'review' : 'initial'
+          }
+        })
+      });
+
+      if (!langGraphResponse.ok) {
+        throw new Error(`LangGraph API call failed: ${langGraphResponse.status} ${langGraphResponse.statusText}`);
+      }
+
+      const threadResult = await langGraphResponse.json();
+      console.log('LangGraph thread created:', threadResult.thread_id);
+
+      // Threadを実行
+      const invokeResponse = await fetch(`${LANGGRAPH_API_URL}/threads/${threadResult.thread_id}/runs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          assistant_id: assistantId,
+          input: {
+            businessName: body.businessName,
+            strengths: body.canvasData.strengths || '',
+            weaknesses: body.canvasData.weaknesses || '',
+            opportunities: body.canvasData.opportunities || '',
+            threats: body.canvasData.threats || '',
+            analysisType: body.context?.requestType === 'improvement' ? 'review' : 'initial'
+          }
+        })
+      });
+
+      if (!invokeResponse.ok) {
+        throw new Error(`LangGraph invoke failed: ${invokeResponse.status} ${invokeResponse.statusText}`);
+      }
+
+      const runResult = await invokeResponse.json();
+      const runId = runResult.run_id;
+      
+      // 実行完了を待つ（最大30秒）
+      let finalResult = runResult;
+      const maxAttempts = 60;
+      let attempts = 0;
+      
+      while (finalResult.status === 'pending' && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const statusResponse = await fetch(`${LANGGRAPH_API_URL}/threads/${threadResult.thread_id}/runs/${runId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (statusResponse.ok) {
+          finalResult = await statusResponse.json();
+        }
+        
+        attempts++;
+      }
+      
+      // 最終状態を取得
+      const valuesResponse = await fetch(`${LANGGRAPH_API_URL}/threads/${threadResult.thread_id}/state`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (valuesResponse.ok) {
+        const stateData = await valuesResponse.json();
+        const output = stateData.values?.output || {};
+        
+        // LangGraphの出力をAPIレスポンス形式に変換
+        // suggestionsのフィールド名を変換
+        const transformedSuggestions = (output.suggestions || []).map((s: any) => ({
+          sectionId: s.id,
+          currentValue: s.currentValue,
+          suggestion: s.suggestedValue,
+          reasoning: s.reasoning,
+          priority: s.priority,
+          type: s.type
+        }));
+        
+        const response: LangGraphResponse = {
+          success: output.success !== false,
+          suggestions: transformedSuggestions,
+          crossSwot: output.crossSwot,
+          reasoning: output.reasoning,
+          error: output.error
+        };
+        
+        console.log('API: Sending SWOT suggestions:', response.suggestions.length);
+        return NextResponse.json(response);
+      }
+      
+    } catch (langGraphError) {
+      console.error('LangGraph API error:', langGraphError);
+      // フォールバック: 簡易的なサジェストを返す
+    }
+
+    // フォールバック処理（LangGraphが利用できない場合）
     const suggestions: SwotSuggestion[] = [];
 
     // 強み(Strengths)のサジェスト
@@ -92,34 +230,13 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // クロスSWOT分析のヒント（全フィールドに一定の内容がある場合）
-    const hasContent = Object.values(body.canvasData).every(v => v && v.length > 50);
-    if (hasContent) {
-      // 改善提案を追加
-      if (body.canvasData.strengths && body.canvasData.opportunities) {
-        suggestions.push({
-          sectionId: 'strengths',
-          currentValue: body.canvasData.strengths,
-          suggestion: body.canvasData.strengths + '\n\n【S×O戦略】強みを活かして機会を最大化:\n• ' + 
-            body.businessName + 'の強みを使って市場機会を捉える積極戦略を検討しましょう',
-          reasoning: 'クロスSWOT分析により、より具体的な戦略立案が可能です。',
-          priority: 'low',
-          type: 'improvement'
-        });
-      }
-    }
-
-    const response = {
+    const response: LangGraphResponse = {
       success: true,
       suggestions: suggestions,
-      metadata: {
-        reasoning: `SWOT分析により${body.businessName}の戦略的ポジションを明確化しました`,
-        model: 'rule-based', // 簡易版のため
-        analysisType: 'SWOT'
-      }
+      reasoning: `SWOT分析により${body.businessName}の戦略的ポジションを明確化しました（フォールバック）`
     };
 
-    console.log('API: Sending SWOT suggestions:', response.suggestions.length);
+    console.log('API: Sending SWOT suggestions (fallback):', response.suggestions.length);
     
     return NextResponse.json(response);
 
@@ -129,10 +246,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: false,
       suggestions: [],
-      metadata: {
-        reasoning: 'Error occurred during SWOT analysis',
-        error: error instanceof Error ? error.message : 'Unknown error'
-      }
+      reasoning: 'Error occurred during SWOT analysis',
+      error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

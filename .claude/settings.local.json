@@ -52,7 +52,8 @@
       "Bash(env)",
       "mcp__playwright__browser_wait_for",
       "Bash(pnpm --filter=agents dev)",
-      "Bash(pnpm --filter=web dev)"
+      "Bash(pnpm --filter=web dev)",
+      "mcp__playwright__browser_press_key"
     ],
     "deny": [],
     "ask": []

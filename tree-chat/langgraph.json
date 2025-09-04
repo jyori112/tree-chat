@@ -13,7 +13,8 @@
     "lean_canvas_agent": "./apps/agents/src/lean-canvas-agent/graph.ts:graph",
     "business_chat_agent": "./apps/agents/src/business-chat-agent/graph.ts:graph",
     "brainstorm_agent": "./apps/agents/src/brainstorm-agent/graph.ts:graph",
-    "visual_brainstorm_agent": "./apps/agents/src/visual-brainstorm-agent/graph.ts:graph"
+    "visual_brainstorm_agent": "./apps/agents/src/visual-brainstorm-agent/graph.ts:graph",
+    "swot_analysis_agent": "./apps/agents/src/swot-analysis-agent/graph.ts:graph"
   },
   "env": ".env"
 }
