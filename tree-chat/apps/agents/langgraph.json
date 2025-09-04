@@ -4,6 +4,12 @@
     "react_agent": "./src/react-agent/graph.ts:graph", 
     "memory_agent": "./src/memory-agent/graph.ts:graph",
     "research_agent": "./src/research-agent/retrieval-graph/graph.ts:graph",
-    "retrieval_agent": "./src/retrieval-agent/graph.ts:graph"
+    "retrieval_agent": "./src/retrieval-agent/graph.ts:graph",
+    "swot_analysis_agent": "./src/swot-analysis-agent/graph.ts:graph",
+    "lean_canvas_agent": "./src/lean-canvas-agent/graph.ts:graph",
+    "business_model_canvas_agent": "./src/business-model-canvas-agent/graph.ts:graph",
+    "3c_analysis_agent": "./src/3c-analysis-agent/graph.ts:graph",
+    "value_proposition_canvas_agent": "./src/value-proposition-canvas-agent/graph.ts:graph",
+    "persona_design_agent": "./src/persona-design-agent/graph.ts:graph"
   }
 }

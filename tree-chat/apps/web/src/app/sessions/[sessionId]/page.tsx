@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { FileSystemProvider, useFileSystem } from '@/lib/data-store';
-import { Plus, FileText, Target, Home, ArrowLeft, Calendar, Edit2 } from 'lucide-react';
+import { Plus, FileText, Target, Home, ArrowLeft, Calendar, Edit2, Grid3X3, User, Users, Lightbulb, BarChart3 } from 'lucide-react';
 
 interface PageInfo {
   id: string;
@@ -35,6 +35,34 @@ const pageTemplates: PageTemplate[] = [
     description: '強み・弱み・機会・脅威を分析',
     icon: <Target className="w-6 h-6" />,
     color: 'bg-purple-100 text-purple-600'
+  },
+  {
+    type: 'business-model-canvas',
+    name: 'ビジネスモデルキャンバス',
+    description: 'ビジネスモデルを9つの要素で整理',
+    icon: <Grid3X3 className="w-6 h-6" />,
+    color: 'bg-indigo-100 text-indigo-600'
+  },
+  {
+    type: '3c-analysis',
+    name: '3C分析',
+    description: '顧客・競合・自社の3つの視点で分析',
+    icon: <BarChart3 className="w-6 h-6" />,
+    color: 'bg-orange-100 text-orange-600'
+  },
+  {
+    type: 'value-proposition-canvas',
+    name: 'バリュープロポジションキャンバス',
+    description: '顧客ニーズと提供価値のフィット',
+    icon: <Lightbulb className="w-6 h-6" />,
+    color: 'bg-yellow-100 text-yellow-600'
+  },
+  {
+    type: 'persona-design',
+    name: 'ペルソナ設定',
+    description: 'ターゲット顧客の詳細な人物像',
+    icon: <User className="w-6 h-6" />,
+    color: 'bg-green-100 text-green-600'
   }
 ];
 
