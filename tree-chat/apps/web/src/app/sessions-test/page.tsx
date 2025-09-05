@@ -19,7 +19,7 @@ function SessionsTestContent() {
       try {
         const rootDirs = await fs.ls('/sessions');
         const sessionList = [];
-        
+
         for (const dir of rootDirs) {
           try {
             const name = await fs.read(`/sessions/${dir}/metadata/name`);
@@ -28,32 +28,31 @@ function SessionsTestContent() {
             // metadata/nameが存在しない場合はスキップ
           }
         }
-        
+
         setSessions(sessionList);
       } catch {
         setSessions([]);
       }
     };
-    
+
     loadSessions();
   }, [fs, sessionId]);
 
   const handleCreateSession = async () => {
     if (!newSessionName.trim()) return;
-    
+
     const id = await createSession(newSessionName);
-    
+
     // metadata構造を作成
     await fs.mkdir(`/sessions/${id}/metadata`);
     await fs.write(`/sessions/${id}/metadata/name`, newSessionName);
     await fs.write(`/sessions/${id}/metadata/created_at`, new Date().toISOString());
-    
+
     // shared構造を作成
     await fs.mkdir(`/sessions/${id}/shared`);
-    await fs.write(`/sessions/${id}/shared/business_name`, '');
-    
+
     setNewSessionName('');
-    
+
     // セッション一覧を更新
     setSessions(prev => [...prev, { id, name: newSessionName }]);
   };
@@ -61,16 +60,16 @@ function SessionsTestContent() {
   const createNewLeanCanvas = async (sessionId: string) => {
     const pageId = `lean-canvas-${Date.now()}`;
     const pagePath = `/sessions/${sessionId}/pages/${pageId}`;
-    
+
     // ページ構造を作成
     await fs.mkdir(pagePath);
     await fs.write(`${pagePath}/type`, 'lean-canvas');
     await fs.write(`${pagePath}/name`, 'リーンキャンバス');
     await fs.write(`${pagePath}/created_at`, new Date().toISOString());
-    
+
     // フィールドディレクトリを作成
     await fs.mkdir(`${pagePath}/fields`);
-    
+
     // リーンキャンバスページに遷移
     router.push(`/sessions/${sessionId}/pages/${pageId}/lean-canvas`);
   };
@@ -81,8 +80,8 @@ function SessionsTestContent() {
       <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-gray-800">Sessions Test</h1>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
           >
             <Home className="w-5 h-5 text-gray-600" />
@@ -94,7 +93,7 @@ function SessionsTestContent() {
         {/* Create New Session */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-lg font-semibold mb-4">新しいセッションを作成</h2>
-          
+
           <div className="space-y-4">
             <div className="flex gap-2">
               <input
@@ -112,7 +111,7 @@ function SessionsTestContent() {
                 作成
               </button>
             </div>
-            
+
             {sessionId && (
               <div className="p-3 bg-green-50 rounded-lg">
                 <p className="text-sm text-green-800">
@@ -126,14 +125,14 @@ function SessionsTestContent() {
         {/* Sessions List */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h2 className="text-lg font-semibold mb-4">セッション一覧</h2>
-          
+
           <div className="space-y-2">
             {sessions.length === 0 ? (
               <p className="text-gray-400 text-sm">セッションがありません</p>
             ) : (
               sessions.map((session) => (
-                <div 
-                  key={session.id} 
+                <div
+                  key={session.id}
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
                 >
                   <div className="flex items-center gap-2">
@@ -172,7 +171,7 @@ function SessionsTestContent() {
               /sessions/test-session/pages/test-page/lean-canvas
             </p>
           </Link>
-          
+
           {sessionId && (
             <button
               onClick={() => createNewLeanCanvas(sessionId)}

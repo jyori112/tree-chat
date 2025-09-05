@@ -4,13 +4,13 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FileSystemProvider, useFileSystem } from '@/lib/data-store';
 import { Plus, FolderOpen, Calendar, ChevronRight, Home } from 'lucide-react';
+import { generateSessionId } from '@/lib/utils/id-generator';
 
 interface SessionInfo {
   id: string;
   name: string;
   createdAt: string;
   pageCount: number;
-  businessName?: string;
 }
 
 function SessionsListContent() {
@@ -38,50 +38,34 @@ function SessionsListContent() {
           try {
             // セッション情報を読み込み
             const sessionPath = `/sessions/${sessionId}`;
-            
-            // セッション名（デフォルトはID）
+
+            // セッション名（デフォルトはsessionId）
             let sessionName = sessionId;
-            try {
-              const nameExists = await fs.exists(`${sessionPath}/name`);
-              if (nameExists) {
-                sessionName = await fs.read(`${sessionPath}/name`);
-              }
-            } catch {}
+            const nameExists = await fs.exists(`${sessionPath}/name`);
+            if (nameExists) {
+              sessionName = await fs.read(`${sessionPath}/name`);
+            }
 
             // 作成日時
             let createdAt = new Date().toISOString();
-            try {
-              const createdExists = await fs.exists(`${sessionPath}/created_at`);
-              if (createdExists) {
-                createdAt = await fs.read(`${sessionPath}/created_at`);
-              }
-            } catch {}
-
-            // 事業名
-            let businessName = '';
-            try {
-              const businessNameExists = await fs.exists(`${sessionPath}/shared/business_name`);
-              if (businessNameExists) {
-                businessName = await fs.read(`${sessionPath}/shared/business_name`);
-              }
-            } catch {}
+            const createdExists = await fs.exists(`${sessionPath}/created_at`);
+            if (createdExists) {
+              createdAt = await fs.read(`${sessionPath}/created_at`);
+            }
 
             // ページ数をカウント
             let pageCount = 0;
-            try {
-              const pagesExists = await fs.exists(`${sessionPath}/pages`);
-              if (pagesExists) {
-                const pages = await fs.ls(`${sessionPath}/pages`);
-                pageCount = pages.length;
-              }
-            } catch {}
+            const pagesExists = await fs.exists(`${sessionPath}/pages`);
+            if (pagesExists) {
+              const pages = await fs.ls(`${sessionPath}/pages`);
+              pageCount = pages.length;
+            }
 
             sessionInfos.push({
               id: sessionId,
               name: sessionName,
               createdAt,
               pageCount,
-              businessName: businessName || undefined
             });
           } catch (error) {
             console.error(`Failed to load session ${sessionId}:`, error);
@@ -89,7 +73,7 @@ function SessionsListContent() {
         }
 
         // 作成日時でソート（新しい順）
-        sessionInfos.sort((a, b) => 
+        sessionInfos.sort((a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
 
@@ -105,15 +89,33 @@ function SessionsListContent() {
   }, [fs]);
 
   const createNewSession = async () => {
-    const sessionId = `session-${Date.now()}`;
+    // ユニークなセッションIDを生成（重複チェック付き）
+    let sessionId = generateSessionId();
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    while (attempts < maxAttempts) {
+      const exists = await fs.exists(`/sessions/${sessionId}`);
+      if (!exists) {
+        break;
+      }
+      sessionId = generateSessionId();
+      attempts++;
+    }
+
+    if (attempts >= maxAttempts) {
+      alert('セッションの作成に失敗しました。もう一度お試しください。');
+      return;
+    }
+
     const sessionPath = `/sessions/${sessionId}`;
-    
+
     await fs.mkdir(sessionPath);
-    await fs.write(`${sessionPath}/name`, '新規セッション');
+    await fs.write(`${sessionPath}/name`, '新規プロジェクト');
     await fs.write(`${sessionPath}/created_at`, new Date().toISOString());
     await fs.mkdir(`${sessionPath}/pages`);
     await fs.mkdir(`${sessionPath}/shared`);
-    
+
     // ページ一覧へ遷移
     window.location.href = `/sessions/${sessionId}`;
   };
@@ -135,8 +137,8 @@ function SessionsListContent() {
         {/* ヘッダー */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="inline-flex items-center gap-2 mb-4 text-gray-600 hover:text-gray-800 transition-colors"
             >
               <Home className="w-4 h-4" />
@@ -192,16 +194,10 @@ function SessionsListContent() {
                     <div className="flex items-center gap-3 mb-2">
                       <FolderOpen className="w-6 h-6 text-blue-500" />
                       <h2 className="text-xl font-semibold text-gray-800">
-                        {session.businessName || session.name}
+                        {session.name}
                       </h2>
                     </div>
-                    
-                    {session.businessName && (
-                      <p className="text-sm text-gray-500 mb-2">
-                        セッション: {session.name}
-                      </p>
-                    )}
-                    
+
                     <div className="flex items-center gap-6 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
@@ -212,7 +208,7 @@ function SessionsListContent() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
                 </div>
               </Link>

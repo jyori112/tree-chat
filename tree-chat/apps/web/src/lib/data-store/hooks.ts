@@ -131,7 +131,7 @@ export function useDebouncedFileWrite(
   delay: number = 500
 ): (data: any) => void {
   const fs = useFileSystem();
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const write = useCallback((data: any) => {
     if (timeoutRef.current) {

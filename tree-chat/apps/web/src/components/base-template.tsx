@@ -65,8 +65,8 @@ export function BaseTemplate<T extends BaseTemplateSection = BaseTemplateSection
   
   // サジェスト機能
   const { suggestions, isLoading, applySuggestion, dismissSuggestion } = useTemplateSuggestions({
-    sessionId,
-    pageId,
+    sessionId: sessionId,
+    pageId: pageId,
     businessName,
     templateData,
     apiEndpoint

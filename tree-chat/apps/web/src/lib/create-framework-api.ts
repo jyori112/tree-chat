@@ -54,7 +54,7 @@ export function createFrameworkApi(framework: FrameworkDef) {
   return createLangGraphClient<FrameworkInput, FrameworkResponse>({
     assistantId: `${framework.id.replace(/-/g, '_')}_agent`,
     
-    transformInput: (requestData) => {
+    transformInput: (requestData): FrameworkInput => {
       const inputData: Record<string, any> = {
         businessName: requestData.businessName
       };
@@ -64,7 +64,7 @@ export function createFrameworkApi(framework: FrameworkDef) {
         inputData[field.id] = requestData.canvasData?.[field.id] || '';
       });
       
-      return inputData;
+      return inputData as FrameworkInput;
     },
     
     transformOutput: (langGraphOutput) => ({

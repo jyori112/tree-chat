@@ -93,6 +93,11 @@ export function FSTextInput({
     };
   }, [saveTimer]);
 
+  // テキストの長さに基づいて幅を調整
+  const inputStyle = {
+    width: `${Math.max(300, Math.min(800, value.length * 15))}px`
+  };
+
   return (
     <input
       type="text"
@@ -100,6 +105,7 @@ export function FSTextInput({
       onChange={handleChange}
       placeholder={placeholder}
       className={className}
+      style={inputStyle}
     />
   );
 }

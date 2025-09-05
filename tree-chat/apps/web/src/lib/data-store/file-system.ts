@@ -353,12 +353,13 @@ export class FileSystem implements FileSystemStore {
         return this.mkdir(command.path);
       case 'rm':
         return this.rm(command.path, command.options?.recursive);
-      case 'mv':
+      case 'mv': {
         if (!command.target) throw new Error('Target path required for mv');
         const data = await this.read(command.path);
         await this.write(command.target, data);
         await this.rm(command.path);
         break;
+      }
       default:
         throw new Error(`Unknown command: ${command.type}`);
     }

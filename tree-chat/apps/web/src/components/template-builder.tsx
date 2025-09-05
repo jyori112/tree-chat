@@ -23,8 +23,8 @@ export type LayoutRenderer<T extends BaseTemplateSection = BaseTemplateSection> 
   businessNameInput: ReactNode;
   sections: ReactNode[];
   metadata: {
-    sessionId: string;
-    pageId: string;
+    sessionName: string;
+    pageName: string;
     templateType: string;
   };
 }) => ReactNode;
@@ -124,7 +124,7 @@ export const defaultLayoutRenderer: LayoutRenderer = ({
       </div>
       
       <div className="text-xs text-gray-400 text-center mt-4">
-        Session: {metadata.sessionId.slice(0, 8)} | Page: {metadata.pageId} | Type: {metadata.templateType}
+        Session: {metadata.sessionName} | Page: {metadata.pageName} | Type: {metadata.templateType}
       </div>
     </div>
   </div>
@@ -193,8 +193,8 @@ export function TemplateBuilder<T extends BaseTemplateSection = BaseTemplateSect
           businessNameInput,
           sections: renderedSections,
           metadata: {
-            sessionId: props.sessionId,
-            pageId: props.pageId,
+            sessionName: props.sessionId,
+            pageName: props.pageId,
             templateType,
           },
         });

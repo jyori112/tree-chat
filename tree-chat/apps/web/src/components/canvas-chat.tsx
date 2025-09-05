@@ -181,10 +181,7 @@ export function CanvasChat({ sessionId, pageId, canvasData, businessName }: Canv
                     : 'mr-auto bg-gray-50 text-left'
                 } rounded-lg p-3 max-w-[85%]`}
               >
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm]}
-                  className="prose prose-sm max-w-none"
-                >
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {message.content}
                 </ReactMarkdown>
 

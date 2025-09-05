@@ -54,7 +54,10 @@
       "Bash(pnpm --filter=agents dev)",
       "Bash(pnpm --filter=web dev)",
       "mcp__playwright__browser_press_key",
-      "Bash(pnpm --filter=agents build)"
+      "Bash(pnpm --filter=agents build)",
+      "mcp__playwright__browser_hover",
+      "Bash(npx tsc:*)",
+      "Bash(npx eslint:*)"
     ],
     "deny": [],
     "ask": []
