@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FileText, Target, Grid3X3, BarChart3, Lightbulb, User } from 'lucide-react';
+import { FileText, Target, Grid3X3, BarChart3, Lightbulb, User, Search, ListTodo } from 'lucide-react';
 
 export interface PageTemplate {
   type: string;
@@ -12,6 +12,13 @@ export interface PageTemplate {
 }
 
 const pageTemplates: PageTemplate[] = [
+  {
+    type: 'deep-research',
+    name: 'Deep Research',
+    description: 'AI駆動の深いリサーチとレポート生成',
+    icon: <Search className="w-6 h-6" />,
+    color: 'bg-red-100 text-red-600'
+  },
   {
     type: 'lean-canvas',
     name: 'リーンキャンバス',
@@ -53,6 +60,13 @@ const pageTemplates: PageTemplate[] = [
     description: 'ターゲット顧客の詳細な人物像',
     icon: <User className="w-6 h-6" />,
     color: 'bg-green-100 text-green-600'
+  },
+  {
+    type: 'task-management',
+    name: 'タスク管理',
+    description: 'タスクの作成・実行・管理',
+    icon: <ListTodo className="w-6 h-6" />,
+    color: 'bg-teal-100 text-teal-600'
   }
 ];
 
