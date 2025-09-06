@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useTasks } from '@/hooks/use-tasks';
+import { useSessionData } from '@/hooks/use-session-data';
 import { TaskCard } from '@/components/task-card';
+import { TaskSuggestions } from '@/components/task-suggestions';
 import { Plus, ListTodo, RefreshCw } from 'lucide-react';
 import { TaskStatus } from '@/types/task';
+import { TaskSuggestionClient } from '@/lib/task-suggestion-client';
 
 export default function TaskManagementPage() {
   const params = useParams();
@@ -24,10 +27,16 @@ export default function TaskManagementPage() {
     refresh
   } = useTasks(sessionId, pageId);
 
+  const { pages } = useSessionData(sessionId);
+
   const [showNewTask, setShowNewTask] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
   const [newTaskDescription, setNewTaskDescription] = useState('');
   const [filterStatus, setFilterStatus] = useState<TaskStatus | 'all'>('all');
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestionSummary, setSuggestionSummary] = useState('');
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [suggestionClient] = useState(() => new TaskSuggestionClient());
 
   const handleCreateTask = async () => {
     if (newTaskName.trim()) {
@@ -41,6 +50,63 @@ export default function TaskManagementPage() {
   const handleCreateChildTask = async (parentId: string, name: string, description: string) => {
     await createTask(name, description, parentId);
   };
+
+  // AI提案の取得
+  const fetchSuggestions = useCallback(async (requestType?: string) => {
+    setSuggestionsLoading(true);
+    try {
+      const response = await suggestionClient.getSuggestions({
+        sessionId,
+        currentPageId: pageId,
+        tasks: Object.values(tasks),
+        pages: pages,
+        requestType: requestType as any || 'general',
+      });
+      
+      setSuggestions(response.suggestions);
+      setSuggestionSummary(response.summary);
+    } catch (error) {
+      console.error('Failed to fetch suggestions:', error);
+      setSuggestions([]);
+      setSuggestionSummary('提案の取得に失敗しました');
+    } finally {
+      setSuggestionsLoading(false);
+    }
+  }, [suggestionClient, sessionId, pageId, tasks, pages]);
+
+  // AI提案の適用
+  const applySuggestion = useCallback(async (suggestion: any) => {
+    switch (suggestion.type) {
+      case 'new_task':
+        await createTask(suggestion.name, suggestion.description, suggestion.parentId);
+        break;
+      case 'update_result':
+        if (suggestion.taskId && suggestion.result) {
+          await updateTaskResult(suggestion.taskId, suggestion.result);
+        }
+        break;
+      case 'change_status':
+        if (suggestion.taskId && suggestion.status) {
+          await updateTaskStatus(suggestion.taskId, suggestion.status);
+        }
+        break;
+      case 'add_subtask':
+        if (suggestion.parentId && suggestion.name) {
+          await createTask(suggestion.name, suggestion.description || '', suggestion.parentId);
+        }
+        break;
+    }
+    
+    // 適用後に提案を再取得
+    await fetchSuggestions();
+  }, [createTask, updateTaskResult, updateTaskStatus, fetchSuggestions]);
+
+  // 初回読み込み時に提案を取得
+  useEffect(() => {
+    if (!loading && Object.keys(tasks).length > 0 && pages.length > 0) {
+      fetchSuggestions();
+    }
+  }, [loading, tasks, pages]);
 
   // タスクツリーを構築
   const taskTree = buildTaskTree();
@@ -80,9 +146,12 @@ export default function TaskManagementPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* ヘッダー */}
-      <div className="mb-6">
+    <div className="max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* メインコンテンツ */}
+        <div className="lg:col-span-2">
+          {/* ヘッダー */}
+          <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <ListTodo className="w-8 h-8 text-blue-600" />
@@ -209,6 +278,21 @@ export default function TaskManagementPage() {
             />
           ))
         )}
+          </div>
+        </div>
+
+        {/* サイドバー: AI提案 */}
+        <div className="lg:col-span-1">
+          <TaskSuggestions
+            suggestions={suggestions}
+            summary={suggestionSummary}
+            loading={suggestionsLoading}
+            onApplySuggestion={applySuggestion}
+            onRefresh={fetchSuggestions}
+            tasks={tasks}
+            pages={pages.map(p => ({ id: p.id, name: p.name, type: p.type }))}
+          />
+        </div>
       </div>
     </div>
   );

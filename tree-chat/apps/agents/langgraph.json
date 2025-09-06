@@ -1,15 +1,9 @@
 {
   "graphs": {
-    "interview_agent": "./src/interview-agent/graph.ts:graph",
-    "react_agent": "./src/react-agent/graph.ts:graph", 
-    "memory_agent": "./src/memory-agent/graph.ts:graph",
-    "research_agent": "./src/research-agent/retrieval-graph/graph.ts:graph",
-    "retrieval_agent": "./src/retrieval-agent/graph.ts:graph",
-    "swot_analysis_agent": "./src/swot-analysis-agent/graph.ts:graph",
-    "lean_canvas_agent": "./src/lean-canvas-agent/graph.ts:graph",
-    "business_model_canvas_agent": "./src/business-model-canvas-agent/graph.ts:graph",
-    "3c_analysis_agent": "./src/3c-analysis-agent/graph.ts:graph",
-    "value_proposition_canvas_agent": "./src/value-proposition-canvas-agent/graph.ts:graph",
-    "persona_design_agent": "./src/persona-design-agent/graph.ts:graph"
+    "agent": "./src/react-agent/graph.ts:graph",
+    "deep_research_manager_agent": "./src/deep-research-manager-agent/graph.ts:graph",
+    "deep_research_researcher_agent": "./src/deep-research-researcher-agent/graph.ts:graph",
+    "deep_research_reporter_agent": "./src/deep-research-reporter-agent/graph.ts:graph",
+    "task_suggestion_agent": "./src/task-suggestion-agent/graph.ts:graph"
   }
 }
