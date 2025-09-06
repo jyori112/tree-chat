@@ -1,5 +1,4 @@
 import { StateGraph } from "@langchain/langgraph";
-import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatOpenAI } from "@langchain/openai";
 import { 
   TaskSuggestionState, 
@@ -23,8 +22,9 @@ import { z } from "zod";
 function getLLM(config: ConfigurationType) {
   const modelName = config.model;
   
+  // Always use ChatOpenAI
   if (modelName.startsWith("anthropic/")) {
-    return new ChatAnthropic({
+    return new ChatOpenAI({
       model: modelName.replace("anthropic/", ""),
       temperature: config.temperature,
     });
@@ -122,10 +122,8 @@ async function generateSuggestions(
       summary: z.string(),
     });
     
-    // Handle different withStructuredOutput signatures for different models
-    const structuredLLM = configuration.model.startsWith("anthropic/")
-      ? (llm as ChatAnthropic).withStructuredOutput(SuggestionsOutputSchema)
-      : (llm as ChatOpenAI).withStructuredOutput(SuggestionsOutputSchema);
+    // Always use ChatOpenAI
+    const structuredLLM = (llm as ChatOpenAI).withStructuredOutput(SuggestionsOutputSchema);
     
     // Build focused context based on request type
     let focusedPrompt = "";

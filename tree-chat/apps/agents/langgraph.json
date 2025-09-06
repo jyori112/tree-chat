@@ -1,9 +1,0 @@
-{
-  "graphs": {
-    "agent": "./src/react-agent/graph.ts:graph",
-    "deep_research_manager_agent": "./src/deep-research-manager-agent/graph.ts:graph",
-    "deep_research_researcher_agent": "./src/deep-research-researcher-agent/graph.ts:graph",
-    "deep_research_reporter_agent": "./src/deep-research-reporter-agent/graph.ts:graph",
-    "task_suggestion_agent": "./src/task-suggestion-agent/graph.ts:graph"
-  }
-}

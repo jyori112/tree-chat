@@ -12,8 +12,8 @@ import { TaskSuggestionClient } from '@/lib/task-suggestion-client';
 
 export default function TaskManagementPage() {
   const params = useParams();
-  const sessionId = params.sessionId as string;
-  const pageId = params.pageId as string;
+  const sessionId = params?.sessionId as string;
+  const pageId = params?.pageId as string;
   
   const {
     tasks,

@@ -21,7 +21,8 @@
     "persona_design_agent": "./apps/agents/src/persona-design-agent/graph.ts:graph",
     "deep_research_manager_agent": "./apps/agents/src/deep-research-manager-agent/graph.ts:graph",
     "deep_research_researcher_agent": "./apps/agents/src/deep-research-researcher-agent/graph.ts:graph",
-    "deep_research_reporter_agent": "./apps/agents/src/deep-research-reporter-agent/graph.ts:graph"
+    "deep_research_reporter_agent": "./apps/agents/src/deep-research-reporter-agent/graph.ts:graph",
+    "task_suggestion_agent": "./apps/agents/src/task-suggestion-agent/graph.ts:graph"
   },
   "env": ".env"
 }
