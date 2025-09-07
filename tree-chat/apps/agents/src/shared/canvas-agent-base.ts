@@ -42,11 +42,11 @@ export function createCanvasAgent<TState extends Record<string, any>>(
   // メイン処理ノード
   async function processCanvas(state: TState) {
     console.log(`=== ${config.agentName}: Processing ===`);
-    
+
     try {
       // 入力データをフォーマット
       const formattedInput = config.formatInput(state);
-      
+
       console.log(`${config.agentName}: Sending prompt to LLM`);
 
       // LLMを呼び出し（構造化出力）

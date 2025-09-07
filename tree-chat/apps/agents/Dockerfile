@@ -15,8 +15,9 @@ COPY apps/agents/package.json ./apps/agents/
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
+# Copy source code and langgraph config
 COPY apps/agents ./apps/agents
+COPY langgraph.json ./
 
 # Build the application
 RUN pnpm --filter agents build
@@ -40,9 +41,10 @@ COPY --from=builder --chown=langgraph:nodejs /app/apps/agents/package.json ./app
 # Install production dependencies only
 RUN pnpm install --frozen-lockfile --prod
 
-# Copy built application
+# Copy built application and langgraph config from root
 COPY --from=builder --chown=langgraph:nodejs /app/apps/agents/dist ./apps/agents/dist
-COPY --from=builder --chown=langgraph:nodejs /app/apps/agents/langgraph.json ./apps/agents/
+COPY --from=builder --chown=langgraph:nodejs /app/apps/agents/src ./apps/agents/src
+COPY --from=builder --chown=langgraph:nodejs /app/langgraph.json ./
 
 USER langgraph
 
@@ -51,6 +53,4 @@ EXPOSE 2024
 ENV PORT 2024
 ENV NODE_ENV production
 
-WORKDIR /app/apps/agents
-
-CMD ["npx", "@langchain/langgraph-cli", "up", "--port", "2024", "--host", "0.0.0.0"]
+CMD ["npx", "@langchain/langgraph-cli", "dev", "--port", "2024", "--host", "0.0.0.0", "--config", "langgraph.json"]

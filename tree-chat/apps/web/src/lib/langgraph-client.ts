@@ -52,7 +52,7 @@ export class LangGraphClient<TInput = any, TOutput = any> {
       }
 
       // Poll for completion
-      const completionResult = await this.pollForCompletion(
+      const _completionResult = await this.pollForCompletion(
         threadResult.threadId,
         runResult.runId
       );

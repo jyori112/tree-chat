@@ -7,9 +7,6 @@ import { useFileSystem } from './data-store';
 import { 
   DeepResearchState, 
   ResearchIssue, 
-  ResearchStage, 
-  ResearchStep,
-  ResearchResult,
   ResearchReport,
   ResearchStatus,
   SubTask,
@@ -83,6 +80,8 @@ export class DeepResearchStore {
       issue,
       overallStatus: 'planning' as ResearchStatus,
       executionMetadata: {
+        createdAt: new Date().toISOString(),
+        version: '1.0.0',
         ...((await this.getState())?.executionMetadata || {}),
         startedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -204,6 +203,8 @@ export class DeepResearchStore {
       report,
       overallStatus: 'completed' as ResearchStatus,
       executionMetadata: {
+        createdAt: new Date().toISOString(),
+        version: '1.0.0',
         ...((await this.getState())?.executionMetadata || {}),
         completedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()

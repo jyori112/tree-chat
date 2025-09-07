@@ -59,7 +59,7 @@ export function useSessionData(sessionId: string): SessionData {
 
           // Read all fields
           const fieldsPath = `${pagePath}/fields`;
-          let fields: Record<string, any> = {};
+          const fields: Record<string, any> = {};
           
           if (await fs.exists(fieldsPath)) {
             const fieldNames = await fs.ls(fieldsPath);

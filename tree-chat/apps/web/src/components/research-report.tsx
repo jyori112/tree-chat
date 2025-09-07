@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ResearchReportProps, ReportFinding, ReportRecommendation } from '@/lib/deep-research-types';
+import { ResearchReportProps } from '@/lib/deep-research-types';
 import { 
   FileText, 
   Download, 
   Eye,
   Calendar,
-  TrendingUp,
   AlertTriangle,
   CheckCircle2,
   Clock,

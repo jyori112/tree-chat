@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { FileSystemProvider, useFileSystem, useFileWatch, useDirWatch, useSession, useDebouncedFileWrite } from '@/lib/data-store';
 import Link from 'next/link';
-import { Home, FolderOpen, File, RefreshCw, Plus, Trash2 } from 'lucide-react';
+import { Home, FolderOpen, File, RefreshCw, Plus } from 'lucide-react';
 
 function DataStoreTestContent() {
   const fs = useFileSystem();
-  const { sessionId, createSession, loadSession } = useSession();
+  const { sessionId, createSession, loadSession: _loadSession } = useSession();
   const [newSessionName, setNewSessionName] = useState('');
   const [testPath, setTestPath] = useState('/test/example.json');
   const [writeData, setWriteData] = useState('{"message": "Hello, FileSystem!"}');

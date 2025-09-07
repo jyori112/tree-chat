@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useFileSystem } from '@/lib/data-store';
-import { DeepResearchPage } from '@/components/deep-research-page';
+import { redirect } from 'next/navigation';
 import { SWOTAnalysisPage } from '@/components/swot-analysis-page';
 import { LeanCanvasPage } from '@/components/lean-canvas-page';
 import { BusinessModelCanvasPage } from '@/components/business-model-canvas-page';
@@ -67,7 +67,9 @@ export default function PageContent() {
   // Render appropriate page component based on type
   switch (pageType) {
     case 'deep-research':
-      return <DeepResearchPage />;
+      // Redirect to dedicated deep-research page
+      redirect(`/sessions/${sessionId}/pages/${pageId}/deep-research`);
+      break;
     case 'swot-analysis':
       return <SWOTAnalysisPage />;
     case 'lean-canvas':

@@ -10,7 +10,7 @@ interface SubTaskListProps {
 }
 
 export function SubTaskList({ subTasks, activeSubTasks, completedSubTasks }: SubTaskListProps) {
-  const getTaskStatus = (taskId: string): 'pending' | 'active' | 'completed' => {
+  const _getTaskStatus = (taskId: string): 'pending' | 'active' | 'completed' => {
     if (completedSubTasks.includes(taskId)) return 'completed';
     if (activeSubTasks.includes(taskId)) return 'active';
     return 'pending';

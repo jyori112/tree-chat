@@ -62,7 +62,7 @@ export function useTaskTemplateSuggestions({
 
   // サジェストの生成
   const getSuggestions = useCallback(async () => {
-    if (Object.keys(tasks).length === 0) return;
+    // Remove the early return - we want suggestions even when there are 0 or few tasks
     
     setIsLoading(true);
     try {

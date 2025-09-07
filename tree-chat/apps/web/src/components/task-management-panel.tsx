@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTasks } from '@/hooks/use-tasks';
 import { useSessionData } from '@/hooks/use-session-data';
 import { TaskCard } from '@/components/task-card';
@@ -41,7 +41,7 @@ export function TaskManagementPanel({
     refresh
   } = useTasks(sessionId, pageId);
 
-  const { pages } = useSessionData(sessionId);
+  const { pages: _pages } = useSessionData(sessionId);
 
   const [showNewTask, setShowNewTask] = useState(false);
   const [newTaskName, setNewTaskName] = useState('');
@@ -66,7 +66,7 @@ export function TaskManagementPanel({
     try {
       // suggestion.suggestionの内容に基づいてタスク操作を実行
       const suggestionData = JSON.parse(suggestion.suggestion);
-      
+
       switch (suggestionData.type) {
         case 'new_task':
           await createTask(suggestionData.name, suggestionData.description, suggestionData.parentId);
@@ -87,10 +87,10 @@ export function TaskManagementPanel({
           }
           break;
       }
-      
+
       // BaseTemplateの統一されたApply機能を呼び出し
       onApplySuggestion(suggestion);
-      
+
     } catch (error) {
       console.error('Failed to apply suggestion:', error);
     }
@@ -102,11 +102,11 @@ export function TaskManagementPanel({
   // ステータスフィルタリング
   const filterTaskTree = (tree: typeof taskTree): typeof taskTree => {
     if (filterStatus === 'all') return tree;
-    
+
     return tree.map(node => ({
       ...node,
       children: filterTaskTree(node.children)
-    })).filter(node => 
+    })).filter(node =>
       node.task.status === filterStatus || node.children.length > 0
     );
   };
@@ -271,7 +271,7 @@ export function TaskManagementPanel({
                       </div>
                       <div className="flex items-center gap-1">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          suggestion.priority === 'high' 
+                          suggestion.priority === 'high'
                             ? 'bg-red-100 text-red-700'
                             : suggestion.priority === 'medium'
                             ? 'bg-orange-100 text-orange-700'
@@ -281,11 +281,11 @@ export function TaskManagementPanel({
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="text-sm text-gray-600 mb-3">
                       {suggestionData.description}
                     </div>
-                    
+
                     {/* AI提案の統一デザイン */}
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                       <div className="flex items-start gap-2 mb-2">
@@ -317,14 +317,14 @@ export function TaskManagementPanel({
             }
           </div>
         )}
-        
+
         {/* 既存タスクリスト */}
         {filteredTaskTree.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
             <ListTodo className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <p className="text-gray-500">
-              {filterStatus === 'all' 
-                ? 'タスクがありません' 
+              {filterStatus === 'all'
+                ? 'タスクがありません'
                 : `${filterStatus}のタスクがありません`}
             </p>
           </div>
@@ -339,7 +339,7 @@ export function TaskManagementPanel({
                 onUpdateTask={updateTask}
                 onDelete={deleteTask}
               />
-              
+
               {/* このタスクに関連する他のAI提案 */}
               {suggestions
                 .filter(suggestion => {

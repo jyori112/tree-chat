@@ -16,24 +16,24 @@ interface TaskTemplateProps {
  */
 export function TaskTemplate({ children }: TaskTemplateProps) {
   const params = useParams();
-  const fs = useFileSystem();
-  const [businessName, setBusinessName] = useState('');
-  const [templateData, setTemplateData] = useState<Record<string, string>>({});
+  const _fs = useFileSystem();
+  const [_businessName, _setBusinessName] = useState('');
+  const [_templateData, _setTemplateData] = useState<Record<string, string>>({});
   
   const sessionId = params.sessionId as string;
   const pageId = params.pageId as string;
   
   // パスの定義（BaseTemplateと同じパターン）
   const pagePath = `/sessions/${sessionId}/pages/${pageId}`;
-  const fieldsPath = `${pagePath}/fields`;
-  const sharedPath = `/sessions/${sessionId}/shared`;
+  const _fieldsPath = `${pagePath}/fields`;
+  const _sharedPath = `/sessions/${sessionId}/shared`;
   
   // Task専用のsuggestion hook
   const { suggestions, isLoading, applySuggestion, dismissSuggestion } = useTaskTemplateSuggestions({
     sessionId,
     pageId,
-    businessName,
-    templateData,
+    businessName: _businessName,
+    templateData: _templateData,
     apiEndpoint: '/api/task-suggestions'
   });
 

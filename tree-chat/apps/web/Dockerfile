@@ -11,12 +11,14 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 
 # Copy app package files
 COPY apps/web/package.json ./apps/web/
+COPY apps/agents/package.json ./apps/agents/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY apps/web ./apps/web
+COPY apps/agents ./apps/agents
 
 # Build the application
 RUN pnpm --filter web build
@@ -36,7 +38,6 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
 
 USER nextjs
 

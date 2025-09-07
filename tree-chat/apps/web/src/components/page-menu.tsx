@@ -23,7 +23,7 @@ export function PageMenu({ sessionId, currentPageId, onAddPage }: PageMenuProps)
   const [pages, setPages] = useState<PageInfo[]>([]);
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const fs = useFileSystem();
-  const { pageOrder, updatePageOrder, addPageToOrder } = usePageOrder(sessionId);
+  const { pageOrder, updatePageOrder, addPageToOrder: _addPageToOrder } = usePageOrder(sessionId);
 
   const pagesPath = `/sessions/${sessionId}/pages`;
 

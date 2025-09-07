@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
 import React from "react";
 
 // Metadata removed to eliminate header

@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
                 finalResult = data.data;
                 console.log('API: Found final values:', finalResult);
               }
-            } catch (e) {
+            } catch (_e) {
               console.log('API: JSON parse error for line:', line);
             }
           }

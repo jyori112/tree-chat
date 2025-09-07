@@ -19,7 +19,7 @@ export type SectionRenderer<T extends BaseTemplateSection = BaseTemplateSection>
 }) => ReactNode;
 
 // レイアウトレンダリング関数の型
-export type LayoutRenderer<T extends BaseTemplateSection = BaseTemplateSection> = (props: {
+export type LayoutRenderer<_T extends BaseTemplateSection = BaseTemplateSection> = (props: {
   businessNameInput: ReactNode;
   sections: ReactNode[];
   metadata: {

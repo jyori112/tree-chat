@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ResearchResultsProps, ResearchResult, ResearchSource } from '@/lib/deep-research-types';
+import { ResearchResultsProps, ResearchSource } from '@/lib/deep-research-types';
 import { 
   FileText, 
   ExternalLink, 
@@ -22,7 +22,7 @@ import {
 
 export function ResearchResults({ results, onGenerateReport }: ResearchResultsProps) {
   const [expandedResults, setExpandedResults] = useState<Set<string>>(new Set());
-  const [selectedSources, setSelectedSources] = useState<Set<string>>(new Set());
+  const [_selectedSources, _setSelectedSources] = useState<Set<string>>(new Set());
 
   const toggleExpanded = (resultId: string) => {
     const newExpanded = new Set(expandedResults);
