@@ -34,6 +34,7 @@
   },
   "packageManager": "pnpm@10.6.3",
   "dependencies": {
-    "@radix-ui/react-scroll-area": "^1.2.10"
+    "@radix-ui/react-scroll-area": "^1.2.10",
+    "swr": "^2.3.6"
   }
 }
