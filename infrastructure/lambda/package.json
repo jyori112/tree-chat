@@ -1,0 +1,28 @@
+{
+  "name": "tree-chat-lambda-functions",
+  "version": "1.0.0",
+  "description": "AWS Lambda functions for Tree Chat data infrastructure",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Lambda functions are pre-compiled in shared package'",
+    "test": "echo 'Tests are run in shared package'",
+    "deploy": "sam deploy --guided"
+  },
+  "dependencies": {
+    "@tree-chat/shared": "workspace:*",
+    "@aws-sdk/client-dynamodb": "^3.374.0",
+    "@aws-sdk/lib-dynamodb": "^3.374.0",
+    "@smithy/util-retry": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.130"
+  },
+  "keywords": [
+    "aws-lambda",
+    "dynamodb",
+    "tree-chat",
+    "data-infrastructure"
+  ],
+  "author": "Tree Chat Team",
+  "license": "MIT"
+}

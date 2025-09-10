@@ -59,7 +59,15 @@
       "Bash(npx tsc:*)",
       "Bash(npx eslint:*)",
       "Bash(npx playwright:*)",
-      "mcp__playwright__browser_select_option"
+      "mcp__playwright__browser_select_option",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:www.langchain.com)",
+      "WebFetch(domain:docs.langchain.com)",
+      "WebFetch(domain:clerk.com)",
+      "Bash(claude-code-spec-workflow get-template-context:*)",
+      "Bash(claude-code-spec-workflow get-spec-context:*)",
+      "Bash(claude-code-spec-workflow get-content:*)",
+      "Bash(claude-code-spec-workflow get-steering-context:*)"
     ],
     "deny": [],
     "ask": []

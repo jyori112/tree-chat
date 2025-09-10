@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Tree Chat Data Infrastructure Lambda Functions
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs18.x
+    Environment:
+      Variables:
+        DYNAMODB_TABLE_NAME: !Ref DataTable
+        DYNAMODB_ENDPOINT: http://host.docker.internal:8000
+        NODE_ENV: development
+
+Parameters:
+  Stage:
+    Type: String
+    Default: local
+    AllowedValues:
+      - local
+      - dev
+      - prod
+
+Resources:
+  # DynamoDB Table for Data Storage
+  DataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'tree-chat-data-${Stage}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: workspaceId
+          AttributeType: S
+        - AttributeName: path
+          AttributeType: S
+      KeySchema:
+        - AttributeName: workspaceId
+          KeyType: HASH
+        - AttributeName: path
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: TreeChat
+        - Key: Environment
+          Value: !Ref Stage
+
+  # Lambda Functions
+  DataReadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'tree-chat-data-read-${Stage}'
+      CodeUri: infrastructure/lambda/data-read/
+      Handler: index.handler
+      Description: Read single data item by path
+      Environment:
+        Variables:
+          OPERATION_TYPE: read
+      Events:
+        ApiGateway:
+          Type: HttpApi
+          Properties:
+            Path: /data/read
+            Method: post
+            ApiId: !Ref DataApi
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref DataTable
+
+  DataWriteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'tree-chat-data-write-${Stage}'
+      CodeUri: infrastructure/lambda/data-write/
+      Handler: index.handler
+      Description: Write single data item to path
+      Environment:
+        Variables:
+          OPERATION_TYPE: write
+      Events:
+        ApiGateway:
+          Type: HttpApi
+          Properties:
+            Path: /data/write
+            Method: post
+            ApiId: !Ref DataApi
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref DataTable
+
+  DataReadTreeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'tree-chat-data-readTree-${Stage}'
+      CodeUri: infrastructure/lambda/data-tree/
+      Handler: index.handler
+      Description: Read all data items under path prefix
+      Environment:
+        Variables:
+          OPERATION_TYPE: readTree
+      Events:
+        ApiGateway:
+          Type: HttpApi
+          Properties:
+            Path: /data/readTree
+            Method: post
+            ApiId: !Ref DataApi
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref DataTable
+
+  DataReadWithDefaultFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'tree-chat-data-readWithDefault-${Stage}'
+      CodeUri: infrastructure/lambda/data-read/
+      Handler: index.handlerWithDefault
+      Description: Read data item with default value fallback
+      Environment:
+        Variables:
+          OPERATION_TYPE: readWithDefault
+      Events:
+        ApiGateway:
+          Type: HttpApi
+          Properties:
+            Path: /data/readWithDefault
+            Method: post
+            ApiId: !Ref DataApi
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref DataTable
+
+  DataBatchFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'tree-chat-data-batch-${Stage}'
+      CodeUri: infrastructure/lambda/data-batch/
+      Handler: index.handler
+      Description: Execute batch operations atomically
+      Environment:
+        Variables:
+          OPERATION_TYPE: batch
+      Events:
+        ApiGateway:
+          Type: HttpApi
+          Properties:
+            Path: /data/batch
+            Method: post
+            ApiId: !Ref DataApi
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DataTable
+
+  # HTTP API Gateway
+  DataApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Description: Tree Chat Data Infrastructure API
+      StageName: !Ref Stage
+      CorsConfiguration:
+        AllowCredentials: true
+        AllowHeaders:
+          - "Content-Type"
+          - "Authorization"
+        AllowMethods:
+          - "POST"
+          - "OPTIONS"
+        AllowOrigins:
+          - "http://localhost:3002"
+          - "http://localhost:3000"
+        MaxAge: 86400
+
+Outputs:
+  DataApiEndpoint:
+    Description: API Gateway endpoint URL for Data functions
+    Value: !Sub "https://${DataApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+    Export:
+      Name: !Sub "${AWS::StackName}-DataApiEndpoint"
+
+  DataApiLocal:
+    Description: Local API Gateway endpoint for development
+    Value: "http://localhost:3001"
+
+  DynamoDBTableName:
+    Description: DynamoDB table name
+    Value: !Ref DataTable
+    Export:
+      Name: !Sub "${AWS::StackName}-DataTableName"
+
+  DynamoDBTableArn:
+    Description: DynamoDB table ARN
+    Value: !GetAtt DataTable.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-DataTableArn"
