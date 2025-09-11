@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Session Management E2E Tests', () => {
+test.describe('Session Management Extended Tests', () => {
   // Helper function to create a test session
   async function createTestSession(page: any, title: string, description: string = '') {
     await page.click('[data-testid="create-session-button"]');

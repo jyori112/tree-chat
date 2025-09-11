@@ -19,6 +19,7 @@
     "format": "prettier --write .",
     "clean": "turbo run clean",
     "test": "turbo run test",
+    "test:e2e": "playwright test",
     "type-check": "turbo run type-check"
   },
   "devDependencies": {
