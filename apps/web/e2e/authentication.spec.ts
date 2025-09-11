@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
+  // Use empty storage state to ensure unauthenticated state
+  test.use({ storageState: { cookies: [], origins: [] } });
   test('should display homepage and authentication options', async ({ page }) => {
     await page.goto('/');
     
@@ -67,7 +69,7 @@ test.describe('Authentication Flow', () => {
     
     // Verify dashboard content is displayed
     await expect(page.locator('h1')).toContainText('Tree Chat Dashboard');
-    await expect(page.locator('h2')).toContainText('Welcome to Tree Chat');
+    await expect(page.locator('h2')).toContainText('Your Sessions');
     
     // Verify user is authenticated by checking for user button
     await expect(page.locator('button[aria-label*="user button"], button:has-text("Open user button")')).toBeVisible();

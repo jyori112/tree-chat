@@ -1,0 +1,6 @@
+
+# clerk configuration (can include secrets)
+/.clerk/
+
+# playwright authentication state
+/e2e/.auth/
