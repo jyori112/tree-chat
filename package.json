@@ -2,7 +2,10 @@
   "name": "tree-chat",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
@@ -19,18 +22,24 @@
     "type-check": "turbo run type-check"
   },
   "devDependencies": {
-    "turbo": "^1.12.4",
+    "@playwright/test": "^1.55.0",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
     "eslint": "^8.56.0",
-    "prettier": "^3.2.4",
-    "typescript": "^5.3.3",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
-    "tdd-guard-jest": "^0.1.1"
+    "prettier": "^3.2.4",
+    "tdd-guard-jest": "^0.1.1",
+    "turbo": "^1.12.4",
+    "typescript": "^5.3.3"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md}": ["prettier --write"]
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }
